@@ -355,6 +355,8 @@
 
     $document.delegate(rails.linkClickSelector, 'click.rails', function(e) {
       var link = $(this), method = link.data('method'), data = link.data('params'), metaClick = e.metaKey || e.ctrlKey;
+      e.preventDefault();
+
       if (!rails.allowAction(link)) return rails.stopEverything(e);
 
       if (!metaClick && link.is(rails.linkDisableSelector)) rails.disableElement(link);
@@ -369,16 +371,17 @@
         } else {
           handleRemote.error( function() { rails.enableElement(link); } );
         }
-        return false;
+        // return false;
 
       } else if (link.data('method')) {
         rails.handleMethod(link);
-        return false;
+        // return false;
       }
     });
 
     $document.delegate(rails.buttonClickSelector, 'click.rails', function(e) {
       var button = $(this);
+      e.preventDefault();
 
       if (!rails.allowAction(button)) return rails.stopEverything(e);
 
@@ -391,15 +394,17 @@
       } else {
         handleRemote.error( function() { rails.enableFormElement(button); } );
       }
-      return false;
+      // return false;
     });
 
     $document.delegate(rails.inputChangeSelector, 'change.rails', function(e) {
       var link = $(this);
       if (!rails.allowAction(link)) return rails.stopEverything(e);
 
+      e.preventDefault();
       rails.handleRemote(link);
-      return false;
+
+      // return false;
     });
 
     $document.delegate(rails.formSubmitSelector, 'submit.rails', function(e) {
@@ -433,7 +438,8 @@
         }
 
         rails.handleRemote(form);
-        return false;
+        e.preventDefault();
+        // return false;
 
       } else {
         // slight timeout so that the submit button gets properly serialized
