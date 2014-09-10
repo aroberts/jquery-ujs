@@ -358,6 +358,8 @@
 
     $document.delegate(ujs.linkClickSelector, 'click.ujs', function(e) {
       var link = $(this), method = link.data('method'), data = link.data('params'), metaClick = e.metaKey || e.ctrlKey;
+      e.preventDefault();
+
       if (!ujs.allowAction(link)) return ujs.stopEverything(e);
 
       if (!metaClick && link.is(ujs.linkDisableSelector)) ujs.disableElement(link);
@@ -372,16 +374,17 @@
         } else {
           handleRemote.error( function() { ujs.enableElement(link); } );
         }
-        return false;
+        // return false;
 
       } else if (link.data('method')) {
         ujs.handleMethod(link);
-        return false;
+        // return false;
       }
     });
 
     $document.delegate(ujs.buttonClickSelector, 'click.ujs', function(e) {
       var button = $(this);
+      e.preventDefault();
 
       if (!ujs.allowAction(button)) return ujs.stopEverything(e);
 
@@ -394,15 +397,17 @@
       } else {
         handleRemote.error( function() { ujs.enableFormElement(button); } );
       }
-      return false;
+      // return false;
     });
 
     $document.delegate(ujs.inputChangeSelector, 'change.ujs', function(e) {
       var link = $(this);
       if (!ujs.allowAction(link)) return ujs.stopEverything(e);
 
+      e.preventDefault();
       ujs.handleRemote(link);
-      return false;
+
+      // return false;
     });
 
     $document.delegate(ujs.formSubmitSelector, 'submit.ujs', function(e) {
@@ -436,7 +441,8 @@
         }
 
         ujs.handleRemote(form);
-        return false;
+        e.preventDefault();
+        // return false;
 
       } else {
         // slight timeout so that the submit button gets properly serialized
