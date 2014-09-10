@@ -28,7 +28,7 @@
     linkClickSelector: 'a[data-confirm], a[data-method], a[data-remote], a[data-disable-with], a[data-disable]',
 
     // Button elements bound by jquery-ujs
-    buttonClickSelector: 'button[data-remote], button[data-confirm]',
+    buttonClickSelector: 'button[data-remote]:not(form button), button[data-confirm]:not(form button)',
 
     // Select elements bound by jquery-ujs
     inputChangeSelector: 'select[data-remote], input[data-remote], textarea[data-remote]',
@@ -325,6 +325,29 @@
 
     $.ajaxPrefilter(function(options, originalOptions, xhr){ if ( !options.crossDomain ) { ujs.CSRFProtection(xhr); }});
 
+    // This event works the same as the load event, except that it fires every
+    // time the page is loaded.
+    //
+    // See https://github.com/rails/jquery-ujs/issues/357
+    // See https://developer.mozilla.org/en-US/docs/Using_Firefox_1.5_caching
+    $(window).on("pageshow.ujs", function () {
+      $($.ujs.enableSelector).each(function () {
+        var element = $(this);
+
+        if (element.data("ujs:enable-with")) {
+          $.ujs.enableFormElement(element);
+        }
+      });
+
+      $($.ujs.linkDisableSelector).each(function () {
+        var element = $(this);
+
+        if (element.data("ujs:enable-with")) {
+          $.ujs.enableElement(element);
+        }
+      });
+    });
+
     $document.delegate(ujs.linkDisableSelector, 'ajax:complete', function() {
         ujs.enableElement($(this));
     });
@@ -359,6 +382,7 @@
 
     $document.delegate(ujs.buttonClickSelector, 'click.ujs', function(e) {
       var button = $(this);
+
       if (!ujs.allowAction(button)) return ujs.stopEverything(e);
 
       if (button.is(ujs.buttonDisableSelector)) ujs.disableFormElement(button);
